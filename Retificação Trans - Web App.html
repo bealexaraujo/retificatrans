@@ -1,0 +1,1188 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Retificação de Nome</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap">
+
+<style>
+/* Layout: sticky header with progress, scrollable card groups beneath */
+/* Bandeira trans: azul #55CDFC · rosa #F7A8B8 · branco #FFFFFF */
+:root {
+  --bg: #F0FAFF;
+  --surface: #FFFFFF;
+  --surface-2: #EDF6FB;
+  --fg: #0D2A35;
+  --fg-muted: #5A8090;
+  --primary: #3AACE8;
+  --primary-light: #D8F1FC;
+  --done: #E8609A;
+  --done-light: #FDEEF5;
+  --pending: #A8D8EE;
+  --amber: #3AACE8;
+  --amber-light: #D8F1FC;
+  --border: #C8E8F5;
+  --shadow: 0 2px 12px rgba(58,172,232,0.10);
+  --radius: 14px;
+  --font-display: 'Raleway', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #071820;
+    --surface: #0E2530;
+    --surface-2: #153040;
+    --fg: #E8F6FF;
+    --fg-muted: #7AAFC0;
+    --primary: #55CDFC;
+    --primary-light: #0E2C3E;
+    --done: #F7A8B8;
+    --done-light: #2E1020;
+    --pending: #2A5568;
+    --amber: #55CDFC;
+    --amber-light: #0E2C3E;
+    --border: #1A3D50;
+    --shadow: 0 2px 16px rgba(0,0,0,0.4);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #071820;
+  --surface: #0E2530;
+  --surface-2: #153040;
+  --fg: #E8F6FF;
+  --fg-muted: #7AAFC0;
+  --primary: #55CDFC;
+  --primary-light: #0E2C3E;
+  --done: #F7A8B8;
+  --done-light: #2E1020;
+  --pending: #2A5568;
+  --amber: #55CDFC;
+  --amber-light: #0E2C3E;
+  --border: #1A3D50;
+  --shadow: 0 2px 16px rgba(0,0,0,0.4);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+  padding-inline: 0;
+  padding-block: 0;
+}
+
+/* ── Trans flag stripe ── */
+.trans-stripe {
+  height: 6px;
+  background: linear-gradient(90deg,
+    #55CDFC 0%, #55CDFC 20%,
+    #F7A8B8 20%, #F7A8B8 40%,
+    #FFFFFF 40%, #FFFFFF 60%,
+    #F7A8B8 60%, #F7A8B8 80%,
+    #55CDFC 80%, #55CDFC 100%
+  );
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 101;
+  flex-shrink: 0;
+}
+
+/* ── Header ── */
+.site-header {
+  position: sticky;
+  top: calc(env(safe-area-inset-top, 0px) + 6px);
+  z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 24px 16px;
+  box-shadow: var(--shadow);
+}
+.header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.header-title h1 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0 0 2px;
+  color: var(--fg);
+  line-height: 1.2;
+}
+.header-title p {
+  font-size: 0.78rem;
+  color: var(--fg-muted);
+  margin: 0;
+  max-width: 480px;
+  line-height: 1.5;
+}
+.progress-label {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+  white-space: nowrap;
+}
+.progress-label span {
+  font-size: 1rem;
+  color: var(--fg-muted);
+  font-weight: 600;
+}
+
+.progress-bar-wrap {
+  margin-top: 14px;
+  height: 8px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--done));
+  border-radius: 99px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Filters ── */
+.filters {
+  display: flex;
+  gap: 8px;
+  padding: 16px 24px 0;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 99px;
+  background: var(--surface);
+  color: var(--fg-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+.filter-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+/* ── Main ── */
+main {
+  padding: 20px 24px 48px;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* ── Category ── */
+.category {
+  margin-bottom: 28px;
+}
+.category-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.category-name {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+.category-count {
+  font-size: 0.72rem;
+  color: var(--fg-muted);
+  font-weight: 600;
+}
+
+/* ── Card ── */
+.doc-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.doc-card:hover { box-shadow: var(--shadow); }
+.doc-card.is-done { border-color: var(--done); background: var(--done-light); }
+.doc-card.hidden-card { display: none; }
+
+.card-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Toggle button */
+.toggle-btn {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--pending);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  padding: 0;
+}
+.toggle-btn:hover { border-color: var(--done); }
+.toggle-btn .check-icon { display: none; }
+.is-done .toggle-btn {
+  background: var(--done);
+  border-color: var(--done);
+}
+.is-done .toggle-btn .check-icon { display: block; }
+
+.card-info { flex: 1; min-width: 0; }
+.card-title {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--fg);
+  transition: color 0.2s;
+}
+.is-done .card-title {
+  text-decoration: line-through;
+  color: var(--fg-muted);
+}
+
+.card-badges {
+  display: flex;
+  gap: 6px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+}
+.badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+  letter-spacing: 0.02em;
+}
+.badge-mode {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.badge-cost {
+  background: var(--done-light);
+  color: var(--done);
+}
+.badge-cost.paid {
+  background: var(--amber-light);
+  color: var(--amber);
+}
+.is-done .badge-mode { opacity: 0.5; }
+.is-done .badge-cost { opacity: 0.5; }
+
+.expand-arrow {
+  flex-shrink: 0;
+  color: var(--fg-muted);
+  transition: transform 0.2s;
+  font-size: 0.75rem;
+}
+.doc-card.expanded .expand-arrow { transform: rotate(180deg); }
+
+/* Detail panel */
+.card-detail {
+  display: none;
+  border-top: 1px solid var(--border);
+  padding: 14px 16px 16px;
+  background: var(--surface-2);
+}
+.doc-card.expanded .card-detail { display: block; }
+
+.detail-section { margin-bottom: 12px; }
+.detail-section:last-child { margin-bottom: 0; }
+.detail-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 5px;
+}
+.detail-text {
+  font-size: 0.82rem;
+  color: var(--fg);
+  line-height: 1.55;
+}
+.docs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.docs-list li {
+  font-size: 0.81rem;
+  color: var(--fg);
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  line-height: 1.4;
+}
+.docs-list li::before {
+  content: "•";
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.detail-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+  padding: 7px 14px;
+  background: var(--primary-light);
+  border-radius: 8px;
+  transition: opacity 0.15s;
+  margin-top: 4px;
+}
+.detail-link:hover { opacity: 0.8; }
+
+/* ── Done banner ── */
+.done-banner {
+  display: none;
+  text-align: center;
+  padding: 28px 24px;
+  background: var(--done-light);
+  border: 1.5px solid var(--done);
+  border-radius: var(--radius);
+  margin-bottom: 28px;
+}
+.done-banner.visible { display: block; }
+.done-banner p {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--done);
+  margin: 0;
+}
+.done-banner small {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: var(--fg-muted);
+}
+
+/* ── No results ── */
+.no-results {
+  text-align: center;
+  padding: 40px 24px;
+  color: var(--fg-muted);
+  font-size: 0.88rem;
+  display: none;
+}
+.no-results.visible { display: block; }
+
+/* ── Footer ── */
+.trans-stripe + .site-footer { border-top: none; }
+.site-footer {
+  text-align: center;
+  padding: 24px 24px calc(24px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+.footer-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--fg);
+  margin: 0 0 3px;
+}
+.footer-role {
+  font-size: 0.75rem;
+  color: var(--fg-muted);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 480px) {
+  .site-header { padding: 16px 16px 14px; }
+  main { padding: 16px 16px 40px; }
+  .filters { padding: 12px 16px 0; }
+}
+</style>
+
+<div class="trans-stripe"></div>
+<header class="site-header">
+  <div class="header-top">
+    <div class="header-title">
+      <h1>🏳️‍⚧️ Retificação de Nome</h1>
+      <p>Chegou sua Certidão de Nascimento nova? Parabéns! Agora vamos atualizar seus outros documentos. Use esse app para se informar e acompanhar as atualizações.</p>
+    </div>
+    <div class="progress-label" id="progress-label">0 <span>/ 17</span></div>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progress-bar" style="width:0%"></div>
+  </div>
+</header>
+
+<div class="filters">
+  <button class="filter-btn active" data-filter="all">Todos</button>
+  <button class="filter-btn" data-filter="pending">Pendentes</button>
+  <button class="filter-btn" data-filter="done">Concluídos</button>
+  <button class="filter-btn" data-filter="online">Somente Online</button>
+  <button class="filter-btn" data-filter="presencial">Somente Presencial</button>
+</div>
+
+<main id="main-content">
+  <div class="done-banner" id="done-banner">
+    <p>🎉 Todos os documentos atualizados!</p>
+    <small>Parabéns por completar toda a jornada de retificação.</small>
+  </div>
+
+  <!-- IDENTIDADE -->
+  <div class="category" data-category="identidade">
+    <div class="category-header">
+      <span class="category-name">Identidade</span>
+      <span class="category-count" id="count-identidade"></span>
+    </div>
+
+    <div class="doc-card" data-id="cin" data-mode="presencial">
+      <div class="card-main">
+        <button class="toggle-btn" aria-label="Marcar como feito">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="card-info">
+          <div class="card-title">RG (agora CIN)</div>
+          <div class="card-badges">
+            <span class="badge badge-mode">Presencial</span>
+            <span class="badge badge-cost">Grátis</span>
+          </div>
+        </div>
+        <span class="expand-arrow">▼</span>
+      </div>
+      <div class="card-detail">
+        <div class="detail-section">
+          <div class="detail-label">Onde</div>
+          <div class="detail-text">Poupa Tempo (com agendamento online) — necessário ir pessoalmente para tirar nova foto.</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Documentos necessários</div>
+          <ul class="docs-list">
+            <li>Certidão de nascimento nova</li>
+            <li>RG antigo (fica retido)</li>
+            <li>Comprovante de residência</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Como fazer</div>
+          <div class="detail-text">Clique em "Solicitar 2ª via do RG" e agende a data e horário no Poupa Tempo.</div>
+        </div>
+        <a class="detail-link" href="https://www.poupatempo.sp.gov.br/wps/myportal/poupatempoTaOn/servicos/intermediarias/rg/" target="_blank" rel="noopener">
+          Agendar no Poupa Tempo ↗
+        </a>
+      </div>
+    </div>
+
+    <div class="doc-card" data-id="cpf" data-mode="online">
+      <div class="card-main">
+        <button class="toggle-btn" aria-label="Marcar como feito">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="card-info">
+          <div class="card-title">CPF</div>
+          <div class="card-badges">
+            <span class="badge badge-mode">Online</span>
+            <span class="badge badge-cost">Grátis</span>
+          </div>
+        </div>
+        <span class="expand-arrow">▼</span>
+      </div>
+      <div class="card-detail">
+        <div class="detail-section">
+          <div class="detail-label">Onde</div>
+          <div class="detail-text">Site da Receita Federal — atualização automática.</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Documentos necessários</div>
+          <ul class="docs-list">
+            <li>Certidão de nascimento nova</li>
+            <li>RG (CIN) atualizado</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Como fazer</div>
+          <div class="detail-text">No campo "Nome", preencha o novo nome. Todas as outras informações permanecem as atuais.</div>
+        </div>
+        <a class="detail-link" href="https://servicos.receita.fazenda.gov.br/servicos/cpf/alterar/default.asp" target="_blank" rel="noopener">
+          Acessar Receita Federal ↗
+        </a>
+      </div>
+    </div>
+
+    <div class="doc-card" data-id="titulo" data-mode="online">
+      <div class="card-main">
+        <button class="toggle-btn" aria-label="Marcar como feito">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="card-info">
+          <div class="card-title">Título de Eleitor</div>
+          <div class="card-badges">
+            <span class="badge badge-mode">Online</span>
+            <span class="badge badge-cost">Grátis</span>
+          </div>
+        </div>
+        <span class="expand-arrow">▼</span>
+      </div>
+      <div class="card-detail">
+        <div class="detail-section">
+          <div class="detail-label">Onde</div>
+          <div class="detail-text">Portal de Autoatendimento do TSE.</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Documentos necessários</div>
+          <ul class="docs-list">
+            <li>Certidão de nascimento nova</li>
+            <li>RG (CIN) atualizado</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Como fazer</div>
+          <div class="detail-text">"Atualize ou corrija seu título eleitoral" → "Atualize seus dados pessoais".</div>
+        </div>
+        <a class="detail-link" href="https://www.tse.jus.br/servicos-eleitorais/autoatendimento-eleitoral" target="_blank" rel="noopener">
+          Acessar TSE ↗
+        </a>
+      </div>
+    </div>
+
+    <div class="doc-card" data-id="cnh" data-mode="presencial">
+      <div class="card-main">
+        <button class="toggle-btn" aria-label="Marcar como feito">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="card-info">
+          <div class="card-title">CNH</div>
+          <div class="card-badges">
+            <span class="badge badge-mode">Presencial</span>
+            <span class="badge badge-cost paid">R$ 120,00</span>
+          </div>
+        </div>
+        <span class="expand-arrow">▼</span>
+      </div>
+      <div class="card-detail">
+        <div class="detail-section">
+          <div class="detail-label">Onde</div>
+          <div class="detail-text">Poupa Tempo (com agendamento online) — necessário ir pessoalmente para tirar nova foto.</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Documentos necessários</div>
+          <ul class="docs-list">
+            <li>Certidão de nascimento nova</li>
+            <li>RG (CIN) atualizado</li>
+            <li>Comprovante de residência</li>
+          </ul>
+        </div>
+        <a class="detail-link" href="https://www.poupatempo.sp.gov.br" target="_blank" rel="noopener">
+          Agendar no Poupa Tempo ↗
+        </a>
+      </div>
+    </div>
+
+    <div class="doc-card" data-id="passaporte" data-mode="presencial">
+      <div class="card-main">
+        <button class="toggle-btn" aria-label="Marcar como feito">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="card-info">
+          <div class="card-title">Passaporte</div>
+          <div class="card-badges">
+            <span class="badge badge-mode">Online + Presencial</span>
+            <span class="badge badge-cost paid">Com taxa</span>
+          </div>
+        </div>
+        <span class="expand-arrow">▼</span>
+      </div>
+      <div class="card-detail">
+        <div class="detail-section">
+          <div class="detail-label">Onde</div>
+          <div class="detail-text">Solicitação online + entrega de documentos presencial na Polícia Federal, com nova foto.</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Documentos necessários</div>
+          <ul class="docs-list">
+            <li>Certidão de nascimento nova</li>
+            <li>RG (CIN) atualizado</li>
+            <li>Comprovante de residência</li>
+            <li>Passaporte atual desatualizado</li>
+          </ul>
+        </div>
+        <a class="detail-link" href="https://servicos.dpf.gov.br/sinpa/inicializacaoSolicitacao.do?dispatch=inicializarSolicitacaoPassaporte" target="_blank" rel="noopener">
+          Solicitar pela Polícia Federal ↗
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRABALHO & PREVIDÊNCIA -->
+  <div class="category" data-category="trabalho">
+    <div class="category-header">
+      <span class="category-name">Trabalho & Previdência</span>
+      <span class="category-count" id="count-trabalho"></span>
+    </div>
+
+    <div class="doc-card" data-id="ctps" data-mode="online">
+      <div class="card-main">
+        <button class="toggle-btn" aria-label="Marcar como feito">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="card-info">
+          <div class="card-title">Carteira de Trabalho Digital</div>
+          <div class="card-badges">
+            <span class="badge badge-mode">Online</span>
+            <span class="badge badge-cost">Automático</span>
+          </div>
+        </div>
+        <span class="expand-arrow">▼</span>
+      </div>
+      <div class="card-detail">
+        <div class="detail-section">
+          <div class="detail-label">Como funciona</div>
+          <div class="detail-text">Atualiza automaticamente após a atualização do CPF. Basta baixar ou atualizar o app da Carteira de Trabalho Digital.</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Documentos necessários</div>
+          <ul class="docs-list">
+            <li>Atualiza sozinho (via CPF)</li>
+          </ul>
+        </div>
+        <a class="detail-link" href="https://www.gov.br/pt-br/temas/carteira-de-trabalho-digital" target="_blank" rel="noopener">
+          App Carteira de Trabalho ↗
+        </a>
+      </div>
+    </div>
+
+    <div class="doc-card" data-id="inss" data-mode="online">
+      <div class="card-main">
+        <button class="toggle-btn" aria-label="Marcar como feito">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="card-info">
+          <div class="card-title">INSS</div>
+          <div class="card-badges">
+            <span class="badge badge-mode">Online</span>
+            <span class="badge badge-cost">Grátis</span>
+          </div>
+        </div>
+        <span class="expand-arrow">▼</span>
+      </div>
+      <div class="card-detail">
+        <div class="detail-section">
+          <div class="detail-label">Como fazer</div>
+          <div class="detail-text">Pelo app Meu INSS no celular. Atualize os dados na plataforma digital.</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Documentos necessários</div>
+          <ul class="docs-list">
+            <li>Certidão de nascimento nova</li>
+            <li>RG (CIN) atualizado</li>
+          </ul>
+        </div>
+        <a class="detail-link" href="https://portal.dataprev.gov.br/noticias/meu-inss-saiba-como-atualizar-os-dados-na-plataforma-digital" target="_blank" rel="noopener">
+          Meu INSS ↗
+        </a>
+      </div>
+    </div>
+
+    <div class="doc-card" data-id="caixa" data-mode="presencial">
+      <div class="card-main">
+        <button class="toggle-btn" aria-label="Marcar como feito">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="card-info">
+          <div class="card-title">Caixa Econômica / PIS / FGTS</div>
+          <div class="card-badges">
+            <span class="badge badge-mode">Presencial</span>
+            <span class="badge badge-cost">Grátis</span>
+          </div>
+        </div>
+        <span class="expand-arrow">▼</span>
+      </div>
+      <div class="card-detail">
+        <div class="detail-section">
+          <div class="detail-label">Onde</div>
+          <div class="detail-text">Diretamente em uma unidade da Caixa Econômica Federal.</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Documentos necessários</div>
+          <ul class="docs-list">
+            <li>Certidão de nascimento nova</li>
+            <li>RG (CIN) atualizado</li>
+            <li>Comprovante de residência</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-card" data-id="cnpj" data-mode="presencial">
+      <div class="card-main">
+        <button class="toggle-btn" aria-label="Marcar como feito">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="card-info">
+          <div class="card-title">CNPJ</div>
+          <div class="card-badges">
+            <span class="badge badge-mode">Presencial</span>
+            <span class="badge badge-cost">Junta Comercial</span>
+          </div>
+        </div>
+        <span class="expand-arrow">▼</span>
+      </div>
+      <div class="card-detail">
+        <div class="detail-section">
+          <div class="detail-label">Onde</div>
+          <div class="detail-text">Presencial na Junta Comercial, com agendamento online.</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Documentos necessários</div>
+          <ul class="docs-list">
+            <li>Certidão de nascimento nova</li>
+            <li>RG (CIN) atualizado</li>
+            <li>Comprovante de residência</li>
+            <li>Comprovante de cadastro do CNPJ</li>
+          </ul>
+        </div>
+        <a class="detail-link" href="https://www.gov.br/pt-br/servicos/inscrever-ou-atualizar-cadastro-nacional-de-pessoas-juridicas" target="_blank" rel="noopener">
+          Orientações no gov.br ↗
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAÚDE & MUNICIPAL -->
+  <div class="category" data-category="saude">
+    <div class="category-header">
+      <span class="category-name">Saúde & Cadastros Municipais</span>
+      <span class="category-count" id="count-saude"></span>
+    </div>
+
+    <div class="doc-card" data-id="sus" data-mode="presencial">
+      <div class="card-main">
+        <button class="toggle-btn" aria-label="Marcar como feito">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="card-info">
+          <div class="card-title">Cadastro SUS</div>
+          <div class="card-badges">
+            <span class="badge badge-mode">Presencial</span>
+            <span class="badge badge-cost">Grátis</span>
+          </div>
+        </div>
+        <span class="expand-arrow">▼</span>
+      </div>
+      <div class="card-detail">
+        <div class="detail-section">
+          <div class="detail-label">Onde</div>
+          <div class="detail-text">Diretamente em uma UBS (Unidade Básica de Saúde).</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Documentos necessários</div>
+          <ul class="docs-list">
+            <li>RG (CIN) atualizado</li>
+            <li>Comprovante de residência</li>
+            <li>Carteirinha SUS atual desatualizada</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-card" data-id="convenio" data-mode="online">
+      <div class="card-main">
+        <button class="toggle-btn" aria-label="Marcar como feito">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="card-info">
+          <div class="card-title">Convênio Médico</div>
+          <div class="card-badges">
+            <span class="badge badge-mode">Por e-mail</span>
+            <span class="badge badge-cost">Grátis</span>
+          </div>
+        </div>
+        <span class="expand-arrow">▼</span>
+      </div>
+      <div class="card-detail">
+        <div class="detail-section">
+          <div class="detail-label">Como fazer</div>
+          <div class="detail-text">Contato direto com a administração do convênio por e-mail.</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Documentos necessários</div>
+          <ul class="docs-list">
+            <li>Certidão de nascimento nova</li>
+            <li>RG (CIN) atualizado</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-card" data-id="ccm" data-mode="presencial">
+      <div class="card-main">
+        <button class="toggle-btn" aria-label="Marcar como feito">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="card-info">
+          <div class="card-title">Cadastro Prefeitura (CCM)</div>
+          <div class="card-badges">
+            <span class="badge badge-mode">Presencial</span>
+            <span class="badge badge-cost">Prefeitura SP</span>
+          </div>
+        </div>
+        <span class="expand-arrow">▼</span>
+      </div>
+      <div class="card-detail">
+        <div class="detail-section">
+          <div class="detail-label">Onde</div>
+          <div class="detail-text">Presencial na Prefeitura, com agendamento online.</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Documentos necessários</div>
+          <ul class="docs-list">
+            <li>Certidão de nascimento nova</li>
+            <li>RG (CIN) atualizado</li>
+            <li>Comprovante de residência</li>
+            <li>Comprovante de cadastro CCM</li>
+          </ul>
+        </div>
+        <a class="detail-link" href="https://www.prefeitura.sp.gov.br/cidade/secretarias/fazenda/servicos/ccm/index.php?p=12525" target="_blank" rel="noopener">
+          Prefeitura SP ↗
+        </a>
+      </div>
+    </div>
+
+    <div class="doc-card" data-id="sp156" data-mode="online">
+      <div class="card-main">
+        <button class="toggle-btn" aria-label="Marcar como feito">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="card-info">
+          <div class="card-title">SP 156</div>
+          <div class="card-badges">
+            <span class="badge badge-mode">Online</span>
+            <span class="badge badge-cost">Grátis</span>
+          </div>
+        </div>
+        <span class="expand-arrow">▼</span>
+      </div>
+      <div class="card-detail">
+        <div class="detail-section">
+          <div class="detail-label">Como fazer</div>
+          <div class="detail-text">Pelo chat do portal SP 156, com atendente.</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Documentos necessários</div>
+          <ul class="docs-list">
+            <li>RG (CIN) atualizado</li>
+          </ul>
+        </div>
+        <a class="detail-link" href="https://sp156.prefeitura.sp.gov.br/portal/servicos" target="_blank" rel="noopener">
+          Portal SP 156 ↗
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINANCEIRO -->
+  <div class="category" data-category="financeiro">
+    <div class="category-header">
+      <span class="category-name">Financeiro & Seguros</span>
+      <span class="category-count" id="count-financeiro"></span>
+    </div>
+
+    <div class="doc-card" data-id="banco" data-mode="online">
+      <div class="card-main">
+        <button class="toggle-btn" aria-label="Marcar como feito">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="card-info">
+          <div class="card-title">Conta Bancária</div>
+          <div class="card-badges">
+            <span class="badge badge-mode">Online</span>
+            <span class="badge badge-cost">Grátis</span>
+          </div>
+        </div>
+        <span class="expand-arrow">▼</span>
+      </div>
+      <div class="card-detail">
+        <div class="detail-section">
+          <div class="detail-label">Como fazer</div>
+          <div class="detail-text">Contato direto com o banco (a depender do banco). Geralmente pelo chat, com atendente.</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Documentos necessários</div>
+          <ul class="docs-list">
+            <li>Certidão de nascimento nova</li>
+            <li>RG (CIN) atualizado</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-card" data-id="seguro-auto" data-mode="online">
+      <div class="card-main">
+        <button class="toggle-btn" aria-label="Marcar como feito">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="card-info">
+          <div class="card-title">Seguro Automóvel</div>
+          <div class="card-badges">
+            <span class="badge badge-mode">Por e-mail</span>
+            <span class="badge badge-cost">Grátis</span>
+          </div>
+        </div>
+        <span class="expand-arrow">▼</span>
+      </div>
+      <div class="card-detail">
+        <div class="detail-section">
+          <div class="detail-label">Como fazer</div>
+          <div class="detail-text">Contato por e-mail com a corretora de seguros.</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Documentos necessários</div>
+          <ul class="docs-list">
+            <li>Certidão de nascimento nova</li>
+            <li>RG (CIN) atualizado</li>
+            <li>Comprovante de residência</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVIÇOS GERAIS -->
+  <div class="category" data-category="servicos">
+    <div class="category-header">
+      <span class="category-name">Serviços & Cadastros Gerais</span>
+      <span class="category-count" id="count-servicos"></span>
+    </div>
+
+    <div class="doc-card" data-id="assinaturas" data-mode="online">
+      <div class="card-main">
+        <button class="toggle-btn" aria-label="Marcar como feito">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="card-info">
+          <div class="card-title">Assinaturas (celular, internet, TV etc.)</div>
+          <div class="card-badges">
+            <span class="badge badge-mode">Online</span>
+            <span class="badge badge-cost">Grátis</span>
+          </div>
+        </div>
+        <span class="expand-arrow">▼</span>
+      </div>
+      <div class="card-detail">
+        <div class="detail-section">
+          <div class="detail-label">Como fazer</div>
+          <div class="detail-text">Contato direto com cada empresa (a depender da operadora). Geralmente pelo chat, com atendente.</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Documentos necessários</div>
+          <ul class="docs-list">
+            <li>Certidão de nascimento nova</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-card" data-id="academia" data-mode="presencial">
+      <div class="card-main">
+        <button class="toggle-btn" aria-label="Marcar como feito">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="card-info">
+          <div class="card-title">Academia, Clube & similares</div>
+          <div class="card-badges">
+            <span class="badge badge-mode">Presencial</span>
+            <span class="badge badge-cost">Grátis</span>
+          </div>
+        </div>
+        <span class="expand-arrow">▼</span>
+      </div>
+      <div class="card-detail">
+        <div class="detail-section">
+          <div class="detail-label">Como fazer</div>
+          <div class="detail-text">Diretamente no balcão do estabelecimento com o RG atualizado.</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Documentos necessários</div>
+          <ul class="docs-list">
+            <li>RG (CIN) atualizado</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="no-results" id="no-results">Nenhum documento encontrado para este filtro.</div>
+</main>
+
+<div class="trans-stripe"></div>
+<footer class="site-footer">
+  <p class="footer-name">Alex Araujo</p>
+  <p class="footer-role">Psicólogo · CRP 06/174740</p>
+</footer>
+
+<script>
+const STORAGE_KEY = 'retificacao-checklist-v1';
+
+// Load state
+let state = {};
+try {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) state = JSON.parse(saved);
+} catch(e) {}
+
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+// Category membership
+const categoryMap = {
+  identidade: ['cin','cpf','titulo','cnh','passaporte'],
+  trabalho: ['ctps','inss','caixa','cnpj'],
+  saude: ['sus','convenio','ccm','sp156'],
+  financeiro: ['banco','seguro-auto'],
+  servicos: ['assinaturas','academia']
+};
+
+const allCards = document.querySelectorAll('.doc-card');
+let currentFilter = 'all';
+
+function updateCard(card) {
+  const id = card.dataset.id;
+  const done = !!state[id];
+  card.classList.toggle('is-done', done);
+}
+
+function updateProgress() {
+  const total = allCards.length;
+  const done = [...allCards].filter(c => state[c.dataset.id]).length;
+  document.getElementById('progress-label').innerHTML = `${done} <span>/ ${total}</span>`;
+  document.getElementById('progress-bar').style.width = `${(done/total)*100}%`;
+  document.getElementById('done-banner').classList.toggle('visible', done === total);
+
+  // Category counts
+  for (const [cat, ids] of Object.entries(categoryMap)) {
+    const doneInCat = ids.filter(id => state[id]).length;
+    const el = document.getElementById(`count-${cat}`);
+    if (el) el.textContent = `${doneInCat} / ${ids.length}`;
+  }
+}
+
+function applyFilter() {
+  let visibleCount = 0;
+  allCards.forEach(card => {
+    let show = true;
+    if (currentFilter === 'pending') show = !state[card.dataset.id];
+    else if (currentFilter === 'done') show = !!state[card.dataset.id];
+    else if (currentFilter === 'online') show = card.dataset.mode === 'online';
+    else if (currentFilter === 'presencial') show = card.dataset.mode === 'presencial';
+    card.classList.toggle('hidden-card', !show);
+    if (show) visibleCount++;
+  });
+
+  // Hide/show category headers
+  document.querySelectorAll('.category').forEach(cat => {
+    const visible = [...cat.querySelectorAll('.doc-card:not(.hidden-card)')].length > 0;
+    cat.style.display = visible ? '' : 'none';
+  });
+
+  document.getElementById('no-results').classList.toggle('visible', visibleCount === 0);
+}
+
+// Init cards
+allCards.forEach(card => {
+  updateCard(card);
+
+  // Toggle status
+  card.querySelector('.toggle-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    const id = card.dataset.id;
+    state[id] = !state[id];
+    saveState();
+    updateCard(card);
+    updateProgress();
+    applyFilter();
+  });
+
+  // Expand/collapse
+  card.querySelector('.card-main').addEventListener('click', () => {
+    const isExpanded = card.classList.contains('expanded');
+    // Close all
+    allCards.forEach(c => c.classList.remove('expanded'));
+    if (!isExpanded) card.classList.add('expanded');
+  });
+});
+
+// Filters
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    applyFilter();
+  });
+});
+
+updateProgress();
+applyFilter();
+</script>
+
+</body></html>
